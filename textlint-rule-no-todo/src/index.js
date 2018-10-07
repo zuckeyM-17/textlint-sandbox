@@ -2,12 +2,10 @@
  * @param {RuleContext} context
  */
 export default function (context) {
-    const helper = new RuleHelper(context);
-    const { Syntax, getSource, RuleError, report } = context; く
+    const { Syntax, getSource, RuleError, report } = context;
     return {
         [Syntax.Str](node) {
             const text = getSource(node);
-
             const match = text.match(/todo:/i);
             if (match) {
                 report(
@@ -18,5 +16,17 @@ export default function (context) {
                 );
             }
         },
+        [Syntax.ListItem](node) {
+            const text = context.getSource(node);
+            const match = text.match(/\[\s+\]\s/i);
+            if (match) {
+                report(
+                    node,
+                    new context.RuleError(`Found TODO: '${text}'`, {
+                        index: match.index
+                    })
+                );
+            }
+        }
     };
 }
